@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hodlinfo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav id="nav">
+            <span>
+                <h1>HoldInfo</h1>
+            </span>
+            <span>
+                <select name="inr" id="dropdown" class="select"></select>
+                <select name="btc" id="dropdown1" class="select"></select>
+                <button>Buy</button>
+            </span>
+            <span>
+                <button id="button">Connect Telegram</button>
+                <span id="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="theme-switch">
+                        <span class="slider"></span>
+                    </label>
+                </span>
+            </span>
+        </nav>
+        
+    </header>
+    <main>
+       
+        <div id="numerical-data">
+            <div class="data-item">
+                <div class="label">5min</div>
+                <div class="value">0.1%</div>
+            </div>
+            <div class="data-item">
+                <div class="label">1hour</div>
+                <div class="value">0.96%</div>
+            </div>
+            <div class="data-item-center">
+                ₴2656110
+            </div>
+            <div class="data-item">
+                <div class="label">1 day</div>
+                <div class="value">2.73%</div>
+            </div>
+            <div class="data-item">
+                <div class="label">7 days</div>
+                <div class="value">7.51%</div>
+            </div>
+        </div>
+        
+
+        <div id="component">
+           
+            <div class="header">
+                <span>#</span>
+                <span>Name</span>
+                <span>Last Traded Price</span>
+                <span>Buy/Sell</span>
+                <span>Volume</span>
+                <span>Base Unit</span>
+            </div>
+            
+        </div>
+    </main>
+    <script>
+        async function fetchData() {
+            const response = await fetch('http://localhost:8000/api/v1/data/getdata');
+            const data = await response.json();
+            const component = document.getElementById('component');
+            const dropdown = document.getElementById('dropdown');
+            const dropdown1 = document.getElementById('dropdown1');
+
+            dropdown.innerHTML += data.data.map(ticker => `
+                <option value="">${ticker.name}</option>
+            `).join('');
+
+            dropdown1.innerHTML += data.data.map(ticker => `
+                <option value="">${ticker.name}</option>
+            `).join('');
+
+          
+            component.innerHTML += data.data.map((ticker, index) => `
+                <div>
+                    <span>${index + 1}</span>
+                    <span>${ticker.name}</span>
+                    <span>${ticker.last}</span>
+                    <span>${ticker.buy}/${ticker.sell}</span>
+                    <span>${ticker.volume}</span>
+                    <span>${ticker.base_unit}</span>
+                </div>
+            `).join('');
+        }
+
+        fetchData();
+
+   
+        const themeSwitch = document.getElementById('theme-switch');
+        const body = document.body;
+
+       
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-theme');
+            themeSwitch.checked = true;
+        }
+
+        themeSwitch.addEventListener('change', () => {
+            if (themeSwitch.checked) {
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>
